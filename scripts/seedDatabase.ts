@@ -7,7 +7,7 @@ const client = new Client({
   host: process.env.NEXT_PUBLIC_DB_HOST,
   database: process.env.NEXT_PUBLIC_DB_NAME,
   password: process.env.NEXT_PUBLIC_DB_PASSWORD,
-  port: parseInt(process.env.NEXT_PUBLIC_DB_PORT as string),
+  port: parseInt(process.env.NEXT_PUBLIC_DB_PORT || '5432'),
 });
 
 

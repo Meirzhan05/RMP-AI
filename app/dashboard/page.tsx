@@ -61,8 +61,18 @@ export default function Dashboard() {
     [allProfessors]
   )
 
-  const handleViewProfessor = (professor: Professor) => {
-    router.push(`/professor/${professor.id}`)
+  const handleViewProfessor = (id: number) => {
+    fetch(`/api/professorInfo`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id: id})
+    }).then(response => response.json())
+    .then(data => {
+      console.log(data)
+    })
+
   }
 
 
@@ -120,7 +130,7 @@ export default function Dashboard() {
                   const professor = paginatedProfessors[rowIndex * 3 + columnIndex]
                   return professor ? (
                     <div style={style} className="p-2">
-                      <ProfessorCard professor={professor} />
+                      <ProfessorCard professor={professor} handleViewProfessor={handleViewProfessor} />
                     </div>
                   ) : null
                 }}
