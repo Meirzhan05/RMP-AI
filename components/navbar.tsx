@@ -12,7 +12,7 @@ export default function Navbar() {
                 <div className="flex items-center space-x-4">
                     <div className="hidden md:flex space-x-4">
                         <Link href="/dashboard" className="text-white hover:text-purple-300 transition duration-300">Dashboard</Link>
-                        <Link href="/about" className="text-white hover:text-purple-300 transition duration-300">About</Link>
+                        <Link href="/chat" className="text-white hover:text-purple-300 transition duration-300">Chat</Link>
                         <Link href="/contact" className="text-white hover:text-purple-300 transition duration-300">Contact</Link>
                     </div>
                     <CustomUserButton />

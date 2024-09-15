@@ -37,10 +37,12 @@ for professor in data:
         'values': embedding,
         'id': professor['name'],
         "metadata": {
-            'department': professor['department'],
-            'school': professor['institution name'],
-            'overall_rating': professor['overall rating'],
-            'number_of_ratings': professor['number of ratings'],
+                'department': professor['department'],
+                'school': professor['institution name'],
+                'overall_rating': professor['overall rating'],
+                'number_of_ratings': professor['number of ratings'],
+                'reviews': professor['reviews']
+
             }
         }
     )
@@ -49,7 +51,7 @@ index = pc.Index("rmp-ai")
 print(processed_data[0:10])
 for i in range(0, len(processed_data), BATCH_SIZE):
     batch = processed_data[i:i+BATCH_SIZE]
-    index.upsert(vectors=batch)
+    index.upsert(vectors=batch, namespace="stetson")
     print(f"Upserted batch {i//BATCH_SIZE + 1}")
 
 
