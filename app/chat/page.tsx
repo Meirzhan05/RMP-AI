@@ -1,7 +1,7 @@
 "use client"
 import React, { useState } from 'react';
 import { Send, User, Bot } from 'lucide-react';
-
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Message {
     role: 'user' | 'assistant';
@@ -11,7 +11,6 @@ interface Message {
 export default function ChatPage() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
-    // const [isLoading, setIsLoading] = useState(false);
 
     const handleSend = async () => {
         if (input.trim()) {
@@ -55,21 +54,40 @@ export default function ChatPage() {
   return (
     <div className="flex justify-center w-full h-[calc(100vh-64px)] bg-gradient-to-br from-purple-900 via-indigo-800 to-blue-900 text-white p-4">
       <main className="flex-1 flex flex-col overflow-hidden max-w-7xl">
-        <div className="flex-1 overflow-y-auto mb-4 bg-white bg-opacity-10 backdrop-blur-md rounded-xl p-4">
-          {messages.map((message, index) => (
-            <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
-              <div className={`flex items-start max-w-[80%] ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                <div className={`rounded-full p-2 ${message.role === 'user' ? 'bg-purple-600' : 'bg-indigo-600'} ${message.role === 'user' ? 'ml-2' : 'mr-2'}`}>
-                  {message.role === 'user' ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
+        <motion.div 
+            className="flex-1 overflow-y-auto mb-4 bg-white bg-opacity-10 backdrop-blur-md rounded-xl p-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+        >
+          <AnimatePresence>
+            {messages.map((message, index) => (
+              <motion.div
+                key={index}
+                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className={`flex items-start max-w-[80%] ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                  <div className={`rounded-full p-2 ${message.role === 'user' ? 'bg-purple-600' : 'bg-indigo-600'} ${message.role === 'user' ? 'ml-2' : 'mr-2'}`}>
+                    {message.role === 'user' ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
+                  </div>
+                  <div className={`${message.role === 'user' ? 'bg-purple-700' : 'bg-indigo-700'} rounded-lg p-3`}>
+                    <p className="text-sm">{message.content}</p>
+                  </div>
                 </div>
-                <div className={`${message.role === 'user' ? 'bg-purple-700' : 'bg-indigo-700'} rounded-lg p-3`}>
-                  <p className="text-sm">{message.content}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="flex items-center bg-white bg-opacity-10 backdrop-blur-md rounded-xl p-2">
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+        <motion.div 
+            className="flex items-center bg-white bg-opacity-10 backdrop-blur-md rounded-xl p-2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+        >
           <input
             type="text"
             value={input}
@@ -81,7 +99,7 @@ export default function ChatPage() {
           <button onClick={handleSend} className="ml-2 bg-purple-600 hover:bg-purple-700 text-white rounded-full p-2 transition duration-300 transform hover:scale-105">
             <Send className="w-5 h-5" />
           </button>
-        </div>
+        </motion.div>
       </main>
     </div>
   );
