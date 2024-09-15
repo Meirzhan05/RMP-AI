@@ -32,9 +32,9 @@ export default function ChatPage() {
                 const decoder = new TextDecoder();
 
                 const result = '';
-                return reader?.read().then(function processText({ done, value }){
+                return reader?.read().then(function processText({ done, value }): Promise<string> {
                     if (done) {
-                        return result;
+                        return Promise.resolve(result);
                     }
                     const chunk = decoder.decode(value || new Uint8Array(), { stream: true });
                     setMessages((messages) => {

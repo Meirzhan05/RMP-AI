@@ -19,7 +19,7 @@ interface ProfessorSummaryJSON {
   recommendation: string;
 }
 
-export default function ProfessorSummaryPopUp({ professor, professorSummaryJSON, setProfessorSummaryJSON, open, setOpen, isLoading, setIsLoading }: { professor: Professor, professorSummaryJSON: ProfessorSummaryJSON, setProfessorSummaryJSON: (professorSummaryJSON: ProfessorSummaryJSON) => void, open: boolean, setOpen: (open: boolean) => void, isLoading: boolean, setIsLoading: (isLoading: boolean) => void}) {
+export default function ProfessorSummaryPopUp({ professor, professorSummaryJSON, setProfessorSummaryJSON, open, setOpen, isLoading }: { professor: Professor, professorSummaryJSON: ProfessorSummaryJSON, setProfessorSummaryJSON: (professorSummaryJSON: ProfessorSummaryJSON) => void, open: boolean, setOpen: (open: boolean) => void, isLoading: boolean, setIsLoading: (isLoading: boolean) => void}) {
   const [isSaving, setIsSaving] = useState(false)
 
   const handleSave = () => {
@@ -111,7 +111,7 @@ export default function ProfessorSummaryPopUp({ professor, professorSummaryJSON,
                 <div>
                   <span className="text-gray-400">Difficulty Level:</span>
                 </div>
-                <div className="text-right">{professor.rating}</div>
+                <div className="text-right">{professor.rating ? `${professor.rating}/5.0` : 'N/A'}</div>
               </motion.div>
               <motion.p
                 initial={{ y: -20, opacity: 0 }}
