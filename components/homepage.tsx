@@ -61,7 +61,7 @@ export default function HomePage() {
           className="text-xl md:text-2xl mb-12 max-w-2xl text-center text-gray-300"
           variants={itemVariants}
         >
-          Get instant insights about professors and courses using our AI-powered platform.
+          Get instant insights about professors at Stetson University using our AI-powered platform.
         </motion.p>
         <motion.div 
           className="flex gap-6 mb-24"
@@ -75,13 +75,13 @@ export default function HomePage() {
           >
             Get Started
           </motion.button>
-          <motion.button 
+          {/* <motion.button 
             className="border border-gray-400 text-gray-300 font-bold py-3 px-8 rounded-full transition-all hover:bg-gray-700"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             Learn More
-          </motion.button>
+          </motion.button> */}
         </motion.div>
 
         <motion.h2 
