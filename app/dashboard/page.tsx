@@ -9,6 +9,7 @@ import { motion } from 'framer-motion'
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import ProfessorCard from '@/components/ProfileCard'
 import ProfessorSummaryPopUp from '@/components/professerSummaryPopUp'
+import LoadingSpinner from '@/components/loadingSpinner';
 
 type Professor = {
   id: number;
@@ -33,26 +34,36 @@ async function fetchProfessors(): Promise<Professor[]> {
   return response.json();
 }
 
-export default function Dashboard() {
+function useAuthCheck() {
+  const { user, isLoaded } = useUser()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (isLoaded && !user) {
+      router.push('/sign-in')
+    }
+  }, [isLoaded, user, router])
+
+  return { isLoaded, user }
+}
+
+function DashboardContent() {
   const [allProfessors, setAllProfessors] = useState<Professor[]>([])
   const [professor, setProfessor] = useState<Professor | null>(null)
   const [professorSummaryJSON, setProfessorSummaryJSON] = useState<ProfessorSummaryJSON | null>(null)
-  const { user } = useUser()
-  const router = useRouter()
   const [open, setOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedDepartment, setSelectedDepartment] = useState('All')
   const [currentPage, setCurrentPage] = useState(1)
   const professorsPerPage = 9 
 
   useEffect(() => {
-    if (!user) {
-      router.push('/sign-in')
-    } else {
-      fetchProfessors().then(professors => setAllProfessors(professors))
-    }
-  }, [user, router])
+    fetchProfessors().then(professors => {
+      setAllProfessors(professors.sort((a, b) => a.name.localeCompare(b.name)))
+      setIsLoading(false)
+    })
+  }, [])
 
   const filteredProfessors = useMemo(() => {
     return allProfessors.filter(prof => 
@@ -97,7 +108,6 @@ export default function Dashboard() {
     })
     .catch(error => {
       console.error('Error fetching professor summary:', error);
-      // Handle the error appropriately, e.g., show an error message to the user
     })
     .finally(() => {
       setIsLoading(false)
@@ -105,7 +115,11 @@ export default function Dashboard() {
     setProfessor(allProfessors.find(prof => prof.id === id) || null)
   }
 
-return (
+  if (isLoading) {
+    return <LoadingSpinner />
+  }
+
+  return (
     <div className="w-full min-h-screen pt-16 flex flex-col justify-center items-center">
       <motion.div 
         className="max-w-7xl w-full mx-auto bg-gray-800 rounded-lg shadow-xl p-6 md:p-8 mt-4"
@@ -206,4 +220,18 @@ return (
       />
     </div>
   )
+}
+
+export default function Dashboard() {
+  const { isLoaded, user } = useAuthCheck()
+
+  if (!isLoaded) {
+    return <LoadingSpinner />
+  }
+
+  if (!user) {
+    return null // This will never render because useAuthCheck will redirect
+  }
+
+  return <DashboardContent />
 }

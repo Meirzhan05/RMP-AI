@@ -3,13 +3,29 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, User, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
+import LoadingSpinner from '@/components/loadingSpinner';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
 
-export default function ChatPage() {
+function useAuthCheck() {
+  const { user, isLoaded } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoaded && !user) {
+      router.push('/sign-in');
+    }
+  }, [isLoaded, user, router]);
+
+  return { isLoaded, user };
+}
+
+function ChatContent() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -137,4 +153,18 @@ export default function ChatPage() {
       </main>
     </div>
   );
+}
+
+export default function ChatPage() {
+  const { isLoaded, user } = useAuthCheck();
+
+  if (!isLoaded) {
+    return <LoadingSpinner />;
+  }
+
+  if (!user) {
+    return null; // This will never render because useAuthCheck will redirect
+  }
+
+  return <ChatContent />;
 }
