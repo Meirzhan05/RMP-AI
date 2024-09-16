@@ -57,6 +57,7 @@ function DashboardContent() {
   const [selectedDepartment, setSelectedDepartment] = useState('All')
   const [currentPage, setCurrentPage] = useState(1)
   const professorsPerPage = 9 
+  const [isProfessorLoading, setIsProfessorLoading] = useState(false)
 
   useEffect(() => {
     fetchProfessors().then(professors => {
@@ -84,7 +85,7 @@ function DashboardContent() {
   )
 
   const handleViewProfessor = (id: number) => {
-    setIsLoading(true)
+    setIsProfessorLoading(true)
     setOpen(true)
     fetch(`/api/professorSummary`, {
       method: 'POST',
@@ -110,7 +111,7 @@ function DashboardContent() {
       console.error('Error fetching professor summary:', error);
     })
     .finally(() => {
-      setIsLoading(false)
+      setIsProfessorLoading(false)
     });
     setProfessor(allProfessors.find(prof => prof.id === id) || null)
   }
@@ -214,8 +215,8 @@ function DashboardContent() {
         }} 
         open={open} 
         setOpen={setOpen} 
-        isLoading={isLoading}
-        setIsLoading={setIsLoading}
+        isLoading={isProfessorLoading}
+        setIsLoading={setIsProfessorLoading}
         setProfessorSummaryJSON={setProfessorSummaryJSON}
       />
     </div>
@@ -230,7 +231,7 @@ export default function Dashboard() {
   }
 
   if (!user) {
-    return null // This will never render because useAuthCheck will redirect
+    return null
   }
 
   return <DashboardContent />
