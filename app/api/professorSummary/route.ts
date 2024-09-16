@@ -1,6 +1,5 @@
 import { Pinecone } from "@pinecone-database/pinecone";
 import { Client } from "pg";
-// import { NextResponse } from "next/server";
 import { Groq } from 'groq-sdk';
 import { OpenAI } from "openai";
 
@@ -27,7 +26,7 @@ You are an AI assistant designed to analyze and summarize professor information.
   "recommendation": "A 2-3 sentence recommendation for students considering taking courses with this professor or joining their research group, based on the professor's profile, strengths, and potential challenges."
 }
 
-Ensure that all text is properly escaped for JSON formatting. Use single quotes for any quoted text within the JSON strings. Keep the tone professional and objective throughout. Base your analysis solely on the information provided about the professor, without making assumptions or adding speculative details.
+Ensure that all text is properly escaped for JSON formatting. Use double quotes for JSON strings and escape any internal double quotes with a backslash. For example: "This is a \\"quoted\\" word". Keep the tone professional and objective throughout. Base your analysis solely on the information provided about the professor, without making assumptions or adding speculative details.
 `
 
 
@@ -104,17 +103,20 @@ export async function POST(req: Request) {
         ],
         response_format: { type: 'json_object' }
     })
+
     let parsedContent;
     if (completion.choices[0].message.content) {
         try {
             parsedContent = JSON.parse(completion.choices[0].message.content);
         } catch (error) {
             console.error('Error parsing JSON:', error);
-            return new Response(JSON.stringify({ error: 'Failed to parse response' }), { status: 500 });
+            console.log('Raw content:', completion.choices[0].message.content);
+            return new Response(JSON.stringify({ error: 'Failed to parse response', raw: completion.choices[0].message.content }), { status: 500 });
         }
     }
-    
-    return new Response(JSON.stringify(parsedContent));
+
+return new Response(JSON.stringify(parsedContent));
+
     
     
 }

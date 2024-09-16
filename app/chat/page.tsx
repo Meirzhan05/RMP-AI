@@ -1,64 +1,91 @@
 "use client"
-import React, { useState } from 'react';
+
+import React, { useState, useRef, useEffect } from 'react';
 import { Send, User, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Message {
-    role: 'user' | 'assistant';
-    content: string;
+  role: 'user' | 'assistant';
+  content: string;
 }
 
 export default function ChatPage() {
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [input, setInput] = useState('');
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    const handleSend = async () => {
-        if (input.trim()) {
-            setMessages((messages) => [
-                ...messages,
-                {role: 'user', content: input},
-                {role: 'assistant', content: ''},
-            ])
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
-            setInput('');
-            fetch('/api/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify([...messages, {role: 'user', content: input}]),
-            }).then(async (res) => {
-                const reader = res.body?.getReader();
-                const decoder = new TextDecoder();
+  useEffect(scrollToBottom, [messages]);
 
-                const result = '';
-                return reader?.read().then(function processText({ done, value }): Promise<string> {
-                    if (done) {
-                        return Promise.resolve(result);
-                    }
-                    const chunk = decoder.decode(value || new Uint8Array(), { stream: true });
-                    setMessages((messages) => {
-                        const lastMessages = messages[messages.length - 1];
-                        const otherMessages = messages.slice(0, messages.length - 1);
-                        return [
-                            ...otherMessages,
-                            {...lastMessages, content: lastMessages.content + chunk},
-                        ]
-                    });
-                    return reader?.read().then(processText);
-                });
-            });
+  const handleSend = async () => {
+    if (input.trim()) {
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { role: 'user', content: input },
+      ]);
+      setInput('');
+      setIsTyping(true);
+
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify([...messages, { role: 'user', content: input }]),
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
         }
+
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+
+        if (reader) {
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { role: 'assistant', content: '' },
+          ]);
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            const chunk = decoder.decode(value, { stream: true });
+            setMessages((prevMessages) => {
+              const lastMessage = prevMessages[prevMessages.length - 1];
+              const updatedMessages = prevMessages.slice(0, -1);
+              return [
+                ...updatedMessages,
+                { ...lastMessage, content: lastMessage.content + chunk },
+              ];
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { role: 'assistant', content: 'Sorry, an error occurred. Please try again.' },
+        ]);
+      } finally {
+        setIsTyping(false);
+      }
+    }
   };
 
   return (
-    <div className="flex justify-center w-full h-[calc(100vh-64px)] bg-gradient-to-br from-purple-900 via-indigo-800 to-blue-900 text-white p-4">
-      <main className="flex-1 flex flex-col overflow-hidden max-w-7xl">
+    <div className="flex justify-center w-full h-[calc(100vh-64px)] text-white p-4 mt-16">
+      <main className="flex-1 flex flex-col overflow-hidden max-w-4xl w-full">
         <motion.div 
-            className="flex-1 overflow-y-auto mb-4 bg-white bg-opacity-10 backdrop-blur-md rounded-xl p-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+          className="flex-1 overflow-y-auto mb-4 bg-gray-800 rounded-lg shadow-xl p-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
           <AnimatePresence>
             {messages.map((message, index) => (
@@ -71,22 +98,23 @@ export default function ChatPage() {
                 transition={{ duration: 0.3 }}
               >
                 <div className={`flex items-start max-w-[80%] ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                  <div className={`rounded-full p-2 ${message.role === 'user' ? 'bg-purple-600' : 'bg-indigo-600'} ${message.role === 'user' ? 'ml-2' : 'mr-2'}`}>
+                  <div className={`rounded-full p-2 ${message.role === 'user' ? 'bg-teal-600' : 'bg-gray-700'} ${message.role === 'user' ? 'ml-2' : 'mr-2'}`}>
                     {message.role === 'user' ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
                   </div>
-                  <div className={`${message.role === 'user' ? 'bg-purple-700' : 'bg-indigo-700'} rounded-lg p-3`}>
+                  <div className={`${message.role === 'user' ? 'bg-teal-700' : 'bg-gray-700'} rounded-lg p-3`}>
                     <p className="text-sm">{message.content}</p>
                   </div>
                 </div>
               </motion.div>
             ))}
           </AnimatePresence>
+          <div ref={messagesEndRef} />
         </motion.div>
         <motion.div 
-            className="flex items-center bg-white bg-opacity-10 backdrop-blur-md rounded-xl p-2"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+          className="flex items-center bg-gray-800 rounded-lg shadow-xl p-2"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
         >
           <input
             type="text"
@@ -96,9 +124,15 @@ export default function ChatPage() {
             placeholder="Type your message here..."
             className="flex-grow bg-transparent text-white placeholder-gray-400 outline-none"
           />
-          <button onClick={handleSend} className="ml-2 bg-purple-600 hover:bg-purple-700 text-white rounded-full p-2 transition duration-300 transform hover:scale-105">
+          <motion.button 
+            onClick={handleSend} 
+            className="ml-2 bg-teal-600 text-white rounded-full p-2 transition duration-300"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            disabled={isTyping}
+          >
             <Send className="w-5 h-5" />
-          </button>
+          </motion.button>
         </motion.div>
       </main>
     </div>
