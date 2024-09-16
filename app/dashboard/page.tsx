@@ -44,7 +44,7 @@ export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedDepartment, setSelectedDepartment] = useState('All')
   const [currentPage, setCurrentPage] = useState(1)
-  const professorsPerPage = 24
+  const professorsPerPage = 9 
 
   useEffect(() => {
     if (!user) {
@@ -97,6 +97,7 @@ export default function Dashboard() {
     })
     .catch(error => {
       console.error('Error fetching professor summary:', error);
+      // Handle the error appropriately, e.g., show an error message to the user
     })
     .finally(() => {
       setIsLoading(false)
@@ -104,7 +105,7 @@ export default function Dashboard() {
     setProfessor(allProfessors.find(prof => prof.id === id) || null)
   }
 
-  return (
+return (
     <div className="w-full min-h-screen pt-16 flex flex-col justify-center items-center">
       <motion.div 
         className="max-w-7xl w-full mx-auto bg-gray-800 rounded-lg shadow-xl p-6 md:p-8 mt-4"
@@ -112,7 +113,6 @@ export default function Dashboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-
         <h2 className="text-3xl md:text-4xl font-bold mb-6 text-teal-400">Dashboard</h2>
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
           <div className="relative w-full md:w-64">
