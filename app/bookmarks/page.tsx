@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Star, Trash2, Search, BookOpen, Zap } from 'lucide-react'
+import { Star, Trash2, Search, Zap } from 'lucide-react'
 
 interface BookmarkItem {
   id: string
@@ -76,20 +76,15 @@ export default function BookmarksPage() {
                 >
                 <div>
                     <div className="flex items-center justify-between mb-2">
-                    {bookmark.category === 'professor' ? (
-                        <BookOpen className="text-teal-400" size={20} />
-                    ) : (
                         <Zap className="text-yellow-400" size={20} />
-                    )}
-                    <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => toggleFavorite(bookmark.id)}
-                        className={`p-1 rounded-full ${bookmark.favorite ? 'text-yellow-400 hover:text-yellow-500' : 'text-gray-400 hover:text-gray-300'}`}
-                        aria-label={bookmark.favorite ? "Remove from favorites" : "Add to favorites"}
-                    >
-                        <Star size={20} />
-                    </motion.button>
+                        <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className={`p-1 rounded-full ${bookmark.favorite ? 'text-yellow-400 hover:text-yellow-500' : 'text-gray-400 hover:text-gray-300'}`}
+                            aria-label={bookmark.favorite ? "Remove from favorites" : "Add to favorites"}
+                        >
+                            <Star size={20} />
+                        </motion.button>
                     </div>
                     <a href={bookmark.url} target="_blank" rel="noopener noreferrer" className="text-teal-400 hover:underline font-medium block mb-1">
                     {bookmark.title}
