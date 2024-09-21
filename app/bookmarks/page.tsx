@@ -1,32 +1,81 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Star, Trash2, Search, Zap } from 'lucide-react'
+import { Search, Trash2, GraduationCap, Book } from 'lucide-react'
+import StarRating from '@/components/starRating'
+import { useUser } from '@clerk/nextjs'
+import ProfessorExistingSummaryPopUp from '@/components/professorExistingSummaryPopUp'
 
-interface BookmarkItem {
-  id: string
-  title: string
-  url: string
-  favorite: boolean
+interface ProfessorBookmark {
+    name: string;
+    summary: string;
+    pros: string[];
+    cons: string[];
+    recommendation: string;
+    professor_id: string;
+    professor: {
+        id: string;
+        name: string;
+        department: string;
+        rating: number;
+        institution_name: string;
+    },
 }
 
 export default function BookmarksPage() {
-    const [bookmarks, setBookmarks] = useState<BookmarkItem[]>([
-        { id: '1', title: 'Professor Smith - Biology', url: 'https://smartrate.com/professors/smith', favorite: true },
-        { id: '3', title: 'Dr. Williams - Mathematics', url: 'https://smartrate.com/professors/williams', favorite: true },
-    ])
-
+    const [bookmarkedProf, setBookmarkedProf] = useState<ProfessorBookmark[]>([])
+    const [selectedProf, setSelectedProf] = useState<ProfessorBookmark | null>(null);
+    const {user} = useUser();
+    const [open, isOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('')
 
-
-    const deleteBookmark = (id: string) => {
-        setBookmarks(bookmarks.filter(bookmark => bookmark.id !== id))
+    const handleClick = (prof: ProfessorBookmark) => {
+        setSelectedProf(prof);
+        isOpen(true);
     }
 
-    const filteredBookmarks = bookmarks.filter(bookmark =>
-        bookmark.title.toLowerCase().includes(searchTerm.toLowerCase())
+    const deleteBookmark = async (id: string) => {
+        try {
+            const response = await fetch('/api/bookmarks', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ professorId: id }), 
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to delete bookmark');
+            }
+            setBookmarkedProf(bookmarkedProf);
+        } catch (error) {
+            console.error('Error deleting bookmark:', error);
+        }
+    };
+
+    const filteredBookmarks = bookmarkedProf.filter(bookmark =>
+        bookmark.professor.name?.toLowerCase().includes(searchTerm.toLowerCase())
     )
+
+    useEffect(() => {
+        const fetchBookmarks = async () => {
+            if (!user) return;
+
+            const response = await fetch(`/api/bookmarks?userId=${user.id}`);
+            if (!response.ok) {
+                console.error('Failed to fetch bookmarks:', response.statusText);
+                return; // Exit if the response is not ok
+            }
+            const data = await response.json();
+            console.log('Fetched bookmarks:', data); // Log the fetched data
+            setBookmarkedProf(data);
+        };
+
+        if (user) {
+            fetchBookmarks();
+        }
+    }, [user])
 
     return (
         <div className="min-h-screen w-full text-white p-8 m-16">
@@ -46,66 +95,69 @@ export default function BookmarksPage() {
             className="mb-8"
         >
             <div className="flex flex-wrap gap-4 mb-4">
-            <div className="relative flex-grow">
-                <input
-                type="text"
-                placeholder="Search bookmarks..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full p-2 pl-10 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400"
-                />
-                <Search className="absolute left-3 top-2.5 text-gray-400" size={20} />
-            </div>
-
+                <div className="relative flex-grow">
+                    <input
+                        type="text"
+                        placeholder="Search bookmarks..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full p-2 pl-10 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-400"
+                    />
+                    <Search className="absolute left-3 top-2.5 text-gray-400" size={20} />
+                </div>
             </div>
         </motion.div>
         
         <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-        >
-            <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredBookmarks.map((bookmark, index) => (
-                <motion.li
-                key={bookmark.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
-                className="bg-gray-800 p-4 rounded-lg shadow-md flex flex-col justify-between"
-                >
-                <div>
-                    <div className="flex items-center justify-between mb-2">
-                        <Zap className="text-yellow-400" size={20} />
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+            >
+                <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredBookmarks.map((bookmark, index) => (
+                    <motion.li
+                        key={bookmark.professor.id}
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                        className="bg-gray-800 p-6 rounded-xl cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+                        onClick={() => handleClick(bookmark)} // {{ edit_4 }}
+                    >
+                    <div className="flex items-center justify-between mb-4">
+                        <GraduationCap className="text-teal-400" size={28} />
                         <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            className={`p-1 rounded-full ${bookmark.favorite ? 'text-yellow-400 hover:text-yellow-500' : 'text-gray-400 hover:text-gray-300'}`}
-                            aria-label={bookmark.favorite ? "Remove from favorites" : "Add to favorites"}
+                        whileHover={{ scale: 1.1, rotate: 15 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => deleteBookmark(bookmark.professor.id)}
+                        className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors"
+                        aria-label="Delete professor"
                         >
-                            <Star size={20} />
+                        <Trash2 size={20} />
                         </motion.button>
                     </div>
-                    <a href={bookmark.url} target="_blank" rel="noopener noreferrer" className="text-teal-400 hover:underline font-medium block mb-1">
-                    {bookmark.title}
-                    </a>
-                    <p className="text-sm text-gray-400 truncate">{bookmark.url}</p>
-                </div>
-                <div className="flex justify-end mt-4">
-                    <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => deleteBookmark(bookmark.id)}
-                    className="p-1 rounded-full text-red-400 hover:text-red-500"
-                    aria-label="Delete bookmark"
-                    >
-                    <Trash2 size={20} />
-                    </motion.button>
-                </div>
-                </motion.li>
-            ))}
-            </ul>
-        </motion.div>
+                    <h3 className="text-xl font-bold text-teal-400 mb-2">{bookmark.professor.name}</h3>
+                    <div className="flex items-center text-gray-300 mb-2">
+                        <Book className="mr-2" size={16} />
+                        <span>{bookmark.professor.department}</span>
+                    </div>
+                    
+                    <StarRating rating={bookmark.professor.rating} />
+                    </motion.li>
+                ))}
+                </ul>
+            </motion.div>
+            {open && selectedProf && (
+                <ProfessorExistingSummaryPopUp
+                    setOpen={isOpen}
+                    professorSummaryJSON={{
+                        name: selectedProf.professor.name,
+                        summary: selectedProf.summary.summary,
+                        pros: selectedProf.summary.pros,
+                        cons: selectedProf.summary.cons,
+                        recommendation: selectedProf.summary.recommendation,
+                    }}
+                />
+            )}
         </div>
     )
 }
