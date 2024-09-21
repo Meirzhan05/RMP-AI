@@ -121,7 +121,7 @@ function DashboardContent() {
   }
 
   return (
-    <div className="w-full min-h-screen pt-16 flex flex-col justify-center items-center">
+    <div className="w-full flex flex-col justify-center items-center">
       <motion.div 
         className="max-w-7xl w-full mx-auto bg-gray-800 rounded-lg shadow-xl p-6 md:p-8 mt-4"
         initial={{ opacity: 0, y: 20 }}

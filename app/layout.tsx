@@ -17,8 +17,8 @@ export default function RootLayout({
       <html lang="en">
         <body className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 to-gray-800">
           <Navbar />
-          <main className="flex-grow flex items-center justify-center">
-            {children}
+          <main className="flex-grow flex items-center justify-center pt-16"> {/* Add padding-top */}
+              {children}
           </main>
         </body>
       </html>

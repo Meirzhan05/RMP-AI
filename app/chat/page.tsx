@@ -95,7 +95,7 @@ function ChatContent() {
   };
 
   return (
-    <div className="flex justify-center w-full h-[calc(100vh-64px)] text-white p-4 mt-16">
+    <div className="flex justify-center w-full h-[calc(100vh-64px)] text-white p-4">
       <main className="flex-1 flex flex-col overflow-hidden max-w-4xl w-full">
         <motion.div 
           className="flex-1 overflow-y-auto mb-4 bg-gray-800 rounded-lg shadow-xl p-4"
