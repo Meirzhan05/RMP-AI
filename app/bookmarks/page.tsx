@@ -30,7 +30,6 @@ interface ProfessorBookmark {
 }
 
 export default function BookmarksPage() {
-    
     const { user, isLoaded } = useUser()
     const router = useRouter()
     const [bookmarkedProf, setBookmarkedProf] = useState<ProfessorBookmark[]>([])
@@ -38,7 +37,7 @@ export default function BookmarksPage() {
     const [open, setOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('')
     const [currentPage, setCurrentPage] = useState(1)
-    const professorsPerPage = 9
+    const professorsPerPage = 12
 
     const handleClick = (prof: ProfessorBookmark) => {
         setSelectedProf(prof);
@@ -99,19 +98,19 @@ export default function BookmarksPage() {
         }
     }, [user])
 
-    // If the user isn't loaded yet or there's no user, don't render the page content
     if (!isLoaded || !user) {
-        return null; // Or you could return a loading spinner here
+        return null;
     }
 
     return (
-        <div className="w-full text-white pr-8 pl-8 max-h-screen overflow-y-auto">
+        <div className="w-full px-4 sm:px-6 lg:px-8 text-white">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
+                className="text-center mb-8"
             >
-                <h2 className="text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-blue-500">Your Knowledge Hub</h2>
+                <h2 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-blue-500">Your Knowledge Hub</h2>
             </motion.div>
 
             <motion.div
@@ -120,8 +119,8 @@ export default function BookmarksPage() {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="mb-8"
             >
-                <div className="flex flex-wrap gap-4 mb-4">
-                    <div className="relative flex-grow">
+                <div className="max-w-2xl mx-auto">
+                    <div className="relative">
                         <input
                             type="text"
                             placeholder="Search bookmarks..."
@@ -142,37 +141,50 @@ export default function BookmarksPage() {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {currentProfessors.map((bookmark, index) => (
-                            <motion.li
-                                key={bookmark.professor.id}
-                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                transition={{ duration: 0.3, delay: index * 0.1 }}
-                                className="bg-gray-800 p-6 rounded-xl cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
-                                onClick={() => handleClick(bookmark)}
-                            >
-                                <div className="flex items-center justify-between mb-4">
-                                    <GraduationCap className="text-teal-400" size={28} />
-                                    <motion.button
-                                        whileHover={{ scale: 1.1, rotate: 15 }}
-                                        whileTap={{ scale: 0.9 }}
-                                        onClick={(e) => deleteBookmark(bookmark.professor.id, e)}
-                                        className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors"
-                                        aria-label="Delete professor"
-                                    >
-                                        <Trash2 size={20} />
-                                    </motion.button>
-                                </div>
-                                <h3 className="text-xl font-bold text-teal-400 mb-2">{bookmark.professor.name}</h3>
-                                <div className="flex items-center text-gray-300 mb-2">
-                                    <Book className="mr-2" size={16} />
-                                    <span>{bookmark.professor.department}</span>
-                                </div>
-                                <StarRating rating={bookmark.professor.rating} />
-                            </motion.li>
-                        ))}
-                    </ul>
+                    {currentProfessors.length > 0 ? (
+                        <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                            {currentProfessors.map((bookmark, index) => (
+                                <motion.li
+                                    key={bookmark.professor.id}
+                                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                                    className="bg-gray-800 p-6 rounded-xl cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
+                                    onClick={() => handleClick(bookmark)}
+                                >
+                                    <div className="flex items-center justify-between mb-4">
+                                        <GraduationCap className="text-teal-400" size={28} />
+                                        <motion.button
+                                            whileHover={{ scale: 1.1, rotate: 15 }}
+                                            whileTap={{ scale: 0.9 }}
+                                            onClick={(e) => deleteBookmark(bookmark.professor.id, e)}
+                                            className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors"
+                                            aria-label="Delete professor"
+                                        >
+                                            <Trash2 size={20} />
+                                        </motion.button>
+                                    </div>
+                                    <h3 className="text-xl font-bold text-teal-400 mb-2">{bookmark.professor.name}</h3>
+                                    <div className="flex items-center text-gray-300 mb-2">
+                                        <Book className="mr-2" size={16} />
+                                        <span>{bookmark.professor.department}</span>
+                                    </div>
+                                    <StarRating rating={bookmark.professor.rating} />
+                                </motion.li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5 }}
+                            className="text-center py-16 bg-gray-800 rounded-xl"
+                        >
+                            <GraduationCap className="mx-auto text-teal-400 mb-4" size={48} />
+                            <p className="text-xl text-gray-400 mb-4">No bookmarks found.</p>
+                            <p className="text-gray-500">Start adding professors to your knowledge hub!</p>
+                        </motion.div>
+                    )}
                 </motion.div>
             </AnimatePresence>
 
@@ -206,28 +218,17 @@ export default function BookmarksPage() {
                 </div>
             )}
 
-        {open && selectedProf && (
-            <ProfessorExistingSummaryPopUp
-                setOpen={setOpen}
-                professorSummaryJSON={{
-                    name: selectedProf.professor.name,
-                    summary: selectedProf.summary.summary,
-                    pros: selectedProf.summary.pros,
-                    cons: selectedProf.summary.cons,
-                    recommendation: selectedProf.summary.recommendation,
-                }}
-            />
-        )}
-
-            {filteredBookmarks.length === 0 && (
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="text-center text-gray-400 mt-8"
-                >
-                    <p className="text-xl">No bookmarks found. Start adding professors to your knowledge hub!</p>
-                </motion.div>
+            {open && selectedProf && (
+                <ProfessorExistingSummaryPopUp
+                    setOpen={setOpen}
+                    professorSummaryJSON={{
+                        name: selectedProf.professor.name,
+                        summary: selectedProf.summary.summary,
+                        pros: selectedProf.summary.pros,
+                        cons: selectedProf.summary.cons,
+                        recommendation: selectedProf.summary.recommendation,
+                    }}
+                />
             )}
         </div>
     )

@@ -6,12 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "vercel-build": "prisma generate && pnpm db:migrate && next build"
   },
   "dependencies": {
     "@clerk/elements": "^0.14.6",
     "@clerk/nextjs": "^5.4.1",
     "@pinecone-database/pinecone": "^3.0.3",
+    "@prisma/client": "^5.19.1",
     "axios": "^1.7.7",
     "fast-csv": "^5.0.1",
     "framer-motion": "^11.5.4",
@@ -22,6 +24,7 @@
     "openai": "^4.59.0",
     "pg": "^8.12.0",
     "pinecone": "^0.1.0",
+    "prisma": "^5.19.1",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.53.0",

@@ -1,14 +1,13 @@
+import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
 import { Pinecone } from "@pinecone-database/pinecone";
-import { Client } from "pg";
-import { Groq } from 'groq-sdk';
 import { OpenAI } from "openai";
-
+import { Groq } from 'groq-sdk';
+const prisma = new PrismaClient();
 
 const groq = new Groq({
     apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY as string
 });
-
-
 
 const systemPrompt = `
 You are an AI assistant designed to analyze and summarize professor information. When given details about a professor, you will generate a comprehensive overview in JSON format. If there are unknown values, you will assign N/A. Your response should always follow this structure:
@@ -27,8 +26,7 @@ You are an AI assistant designed to analyze and summarize professor information.
 }
 
 Ensure that all text is properly escaped for JSON formatting. Use double quotes for JSON strings and escape any internal double quotes with a backslash. For example: "This is a \\"quoted\\" word". Keep the tone professional and objective throughout. Base your analysis solely on the information provided about the professor, without making assumptions or adding speculative details.
-`
-
+`;
 
 export async function POST(req: Request) {
     const data = await req.json();
@@ -38,33 +36,27 @@ export async function POST(req: Request) {
     });
     let professor;
 
-    const client = new Client({
-        host: process.env.NEXT_PUBLIC_DB_HOST,
-        port: parseInt(process.env.NEXT_PUBLIC_DB_PORT as string),
-        user: process.env.NEXT_PUBLIC_DB_USER,
-        password: process.env.NEXT_PUBLIC_DB_PASSWORD,
-        database: process.env.NEXT_PUBLIC_DB_NAME
-    });
-
     try {
-        await client.connect();
-        const query = 'SELECT * FROM professors WHERE id = $1';
-        const result = await client.query(query, [id]);
-        professor = result.rows[0];
+        professor = await prisma.professor.findUnique({
+            where: { id: parseInt(id) },
+        });
+
+        if (!professor) {
+            return NextResponse.json({ error: 'Professor not found' }, { status: 404 });
+        }
     } catch (error) {
         console.error('Error fetching professor info:', error);
-    } finally {
-        await client.end();
+        return NextResponse.json({ error: 'Failed to fetch professor info' }, { status: 500 });
     }
 
     const openai = new OpenAI({
         apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY as string
-    })
+    });
 
     const embedding = await openai.embeddings.create({
         model: "text-embedding-3-small",
         input: professor.name
-    })
+    });
 
     const index = pc.Index("rmp-ai").namespace("stetson");
 
@@ -72,8 +64,7 @@ export async function POST(req: Request) {
         topK: 1,
         includeMetadata: true,
         vector: embedding.data[0].embedding
-    })
-
+    });
 
     let resultsString = "\n\nReturned results from vector db (done automatically):";
     results.matches.forEach((match) => {
@@ -86,8 +77,7 @@ export async function POST(req: Request) {
         Number of Ratings: ${match.metadata?.number_of_ratings}
         Reviews: ${match.metadata?.reviews}
         `;
-    })
-
+    });
 
     const completion = await groq.chat.completions.create({
         model: 'llama3-8b-8192',
@@ -102,7 +92,7 @@ export async function POST(req: Request) {
             }
         ],
         response_format: { type: 'json_object' }
-    })
+    });
 
     let parsedContent;
     if (completion.choices[0].message.content) {
@@ -115,8 +105,8 @@ export async function POST(req: Request) {
         }
     }
 
-return new Response(JSON.stringify(parsedContent));
+    return new Response(JSON.stringify(parsedContent));
 
-    
-    
+    // Don't forget to disconnect Prisma client when done
+    await prisma.$disconnect();
 }
