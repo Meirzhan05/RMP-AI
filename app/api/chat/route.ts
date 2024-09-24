@@ -46,7 +46,7 @@ const groq = new Groq({
 export async function POST(req: Request) {
     const data = await req.json();
     const pc = new Pinecone({
-        apiKey: process.env.NEXT_PUBLIC_PINECONE_API_KEY as string
+        apiKey: process.env.PINECONE_API_KEY as string
     })
 
     const index = pc.Index("rmp-ai").namespace("stetson");
