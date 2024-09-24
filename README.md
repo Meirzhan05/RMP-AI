@@ -89,4 +89,4 @@ Visit `http://localhost:3000` to see the application in action!
 - `/scripts`: Database seeding and other scripts
 - `/public`: Static assets
 
-Built with ❤️ by [Meirzhan]
+Built with ❤️ by Meirzhan
