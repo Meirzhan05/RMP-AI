@@ -18,7 +18,6 @@ async function seedDatabase() {
             return;
         }
 
-        // Read the JSON file
         const data = JSON.parse(fs.readFileSync('./loadingPinecone/Stetson.json', 'utf8'));
 
         for (const professor of data) {
