@@ -28,6 +28,7 @@ interface ProfessorSummaryJSON {
 
 async function fetchProfessors(): Promise<Professor[]> {
   const response = await fetch('/api/professors');
+  console.log(response)
   if (!response.ok) {
     throw new Error('Failed to fetch professors');
   }

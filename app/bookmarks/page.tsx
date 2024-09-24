@@ -6,10 +6,16 @@ import { Search, Trash2, GraduationCap, Book, ChevronLeft, ChevronRight } from '
 import StarRating from '@/components/starRating'
 import { useUser } from '@clerk/nextjs'
 import ProfessorExistingSummaryPopUp from '@/components/professorExistingSummaryPopUp'
+import { useRouter } from 'next/navigation'
 
 interface ProfessorBookmark {
     name: string;
-    summary: string;
+    summary: {
+        summary: string;
+        pros: string[];
+        cons: string[];
+        recommendation: string;
+    };
     pros: string[];
     cons: string[];
     recommendation: string;
@@ -24,9 +30,11 @@ interface ProfessorBookmark {
 }
 
 export default function BookmarksPage() {
+    
+    const { user, isLoaded } = useUser()
+    const router = useRouter()
     const [bookmarkedProf, setBookmarkedProf] = useState<ProfessorBookmark[]>([])
     const [selectedProf, setSelectedProf] = useState<ProfessorBookmark | null>(null);
-    const { user } = useUser();
     const [open, setOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('')
     const [currentPage, setCurrentPage] = useState(1)
@@ -68,6 +76,12 @@ export default function BookmarksPage() {
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
     useEffect(() => {
+        if (isLoaded && !user) {
+            router.push('/')
+        }
+    }, [isLoaded, user, router])
+
+    useEffect(() => {
         const fetchBookmarks = async () => {
             if (!user) return;
 
@@ -84,6 +98,11 @@ export default function BookmarksPage() {
             fetchBookmarks();
         }
     }, [user])
+
+    // If the user isn't loaded yet or there's no user, don't render the page content
+    if (!isLoaded || !user) {
+        return null; // Or you could return a loading spinner here
+    }
 
     return (
         <div className="w-full text-white pr-8 pl-8 max-h-screen overflow-y-auto">
