@@ -8,9 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
-    "vercel-build": "prisma generate && prisma db push && node scripts/seedDatabase.js && next build",
+    "vercel-build": "prisma generate && prisma db push && next build",
     "db:migrate": "prisma migrate deploy",
-    "seed:vercel": "ts-node --transpile-only scripts/seedDatabase.ts"
+    "seed": "node scripts/seedDatabase.js",
+    "seed:force": "ts-node --transpile-only scripts/seedDatabase.ts --force",
   },
   "dependencies": {
     "@clerk/elements": "^0.14.6",
@@ -27,7 +28,6 @@
     "openai": "^4.59.0",
     "pg": "^8.12.0",
     "pinecone": "^0.1.0",
-    "prisma": "^5.19.1",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.53.0",
@@ -36,7 +36,7 @@
     "sharp": "^0.33.5"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^20.16.6",
     "@types/pg": "^8.11.10",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -45,6 +45,7 @@
     "eslint": "^8",
     "eslint-config-next": "14.2.8",
     "postcss": "^8.4.45",
+    "prisma": "^5.20.0",
     "tailwindcss": "^3.4.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.2"

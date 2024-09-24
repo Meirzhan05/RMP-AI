@@ -108,7 +108,6 @@ export async function POST(req: Request) {
         stream: true
     })
 
-    console.log(completion);
     const stream = new ReadableStream({
         async start(controller) {
             const encoder = new TextEncoder();

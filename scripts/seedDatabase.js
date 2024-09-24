@@ -38,25 +38,34 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var client_1 = require("@prisma/client");
 var fs = require("fs");
-var prisma = new client_1.PrismaClient({
-    datasources: {
-        db: {
-            url: process.env.POSTGRES_URL,
-        },
-    },
-});
 function seedDatabase() {
     return __awaiter(this, void 0, void 0, function () {
-        var data, _i, data_1, professor, createdProfessor, error_1;
+        var prisma, existingProfessorCount, data, _i, data_1, professor, createdProfessor, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 5, 6, 8]);
-                    data = JSON.parse(fs.readFileSync('./loadingPinecone/Stetson.json', 'utf8'));
-                    _i = 0, data_1 = data;
+                    prisma = new client_1.PrismaClient({
+                        datasources: {
+                            db: {
+                                url: process.env.POSTGRES_URL,
+                            }
+                        },
+                    });
                     _a.label = 1;
                 case 1:
-                    if (!(_i < data_1.length)) return [3 /*break*/, 4];
+                    _a.trys.push([1, 7, 8, 10]);
+                    return [4 /*yield*/, prisma.professor.count()];
+                case 2:
+                    existingProfessorCount = _a.sent();
+                    if (existingProfessorCount > 0) {
+                        console.log('Database already seeded. Skipping seeding process.');
+                        return [2 /*return*/];
+                    }
+                    data = JSON.parse(fs.readFileSync('./loadingPinecone/Stetson.json', 'utf8'));
+                    _i = 0, data_1 = data;
+                    _a.label = 3;
+                case 3:
+                    if (!(_i < data_1.length)) return [3 /*break*/, 6];
                     professor = data_1[_i];
                     return [4 /*yield*/, prisma.professor.create({
                             data: {
@@ -71,25 +80,25 @@ function seedDatabase() {
                                 }
                             }
                         })];
-                case 2:
+                case 4:
                     createdProfessor = _a.sent();
                     console.log("Inserted professor: ".concat(createdProfessor.name));
-                    _a.label = 3;
-                case 3:
-                    _i++;
-                    return [3 /*break*/, 1];
-                case 4:
-                    console.log('Data inserted successfully');
-                    return [3 /*break*/, 8];
+                    _a.label = 5;
                 case 5:
+                    _i++;
+                    return [3 /*break*/, 3];
+                case 6:
+                    console.log('Data inserted successfully');
+                    return [3 /*break*/, 10];
+                case 7:
                     error_1 = _a.sent();
                     console.error('Error inserting data:', error_1);
-                    return [3 /*break*/, 8];
-                case 6: return [4 /*yield*/, prisma.$disconnect()];
-                case 7:
+                    return [3 /*break*/, 10];
+                case 8: return [4 /*yield*/, prisma.$disconnect()];
+                case 9:
                     _a.sent();
                     return [7 /*endfinally*/];
-                case 8: return [2 /*return*/];
+                case 10: return [2 /*return*/];
             }
         });
     });

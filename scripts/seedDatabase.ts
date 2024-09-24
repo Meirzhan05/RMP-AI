@@ -1,15 +1,16 @@
 import { PrismaClient } from '@prisma/client';
 import * as fs from 'fs';
 
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: process.env.POSTGRES_PRISMA_URL,
-    },
-  },
-});
+
 
 async function seedDatabase() {
+    const prisma = new PrismaClient({
+        datasources: {
+          db: {
+              url: process.env.POSTGRES_PRISMA_URL,
+          }
+        },
+    });
     try {
         // Check if the database is already seeded
         const existingProfessorCount = await prisma.professor.count();
