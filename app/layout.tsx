@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider publishableKey={process.env.CLERK_PUBLISHABLE_KEY}>
       <html lang="en">
         <body className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 to-gray-800">
           <Navbar />
