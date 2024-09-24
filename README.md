@@ -89,19 +89,4 @@ Visit `http://localhost:3000` to see the application in action!
 - `/scripts`: Database seeding and other scripts
 - `/public`: Static assets
 
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for more details.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgements
-
-- Stetson University for providing the initial dataset
-- The open-source community for the amazing tools and libraries used in this project
-
----
-
 Built with ❤️ by [Meirzhan]
