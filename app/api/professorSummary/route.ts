@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     const data = await req.json();
     const id = data.id;
     const pc = new Pinecone({
-        apiKey: process.env.NEXT_PUBLIC_PINECONE_API_KEY as string
+        apiKey: process.env.PINECONE_API_KEY as string
     });
     let professor;
 
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
     }
 
     const openai = new OpenAI({
-        apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY as string
+        apiKey: process.env.OPENAI_API_KEY as string
     });
 
     const embedding = await openai.embeddings.create({

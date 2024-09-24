@@ -40,7 +40,7 @@ Output only plain text. Do not output markdown.
 `
 
 const groq = new Groq({
-    apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY as string
+    apiKey: process.env.GROQ_API_KEY as string
 })
 
 export async function POST(req: Request) {
