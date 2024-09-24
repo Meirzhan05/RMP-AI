@@ -4,7 +4,7 @@ Smart Rate is an innovative AI-powered platform designed to help Stetson Univers
 
 ## 🌐 Live Demo
 
-Experience Smart Rate in action: [https://rmp-ai.vercel.app/](https://rmp-ai.vercel.app/)
+Experience Smart Rate in action: [https://rmp-ai.vercel.app/]([https://rmp-ai.vercel.app/](https://smartrate.vercel.app/))
 
 ## 🌟 Features
 
