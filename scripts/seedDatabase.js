@@ -38,7 +38,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var client_1 = require("@prisma/client");
 var fs = require("fs");
-var prisma = new client_1.PrismaClient();
+var prisma = new client_1.PrismaClient({
+    datasources: {
+        db: {
+            url: process.env.POSTGRES_URL,
+        },
+    },
+});
 function seedDatabase() {
     return __awaiter(this, void 0, void 0, function () {
         var data, _i, data_1, professor, createdProfessor, error_1;

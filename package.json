@@ -8,8 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build",
-    "db:migrate": "prisma migrate deploy"
+    "vercel-build": "prisma generate && prisma db push && node scripts/seedDatabase.js && next build",
+    "db:migrate": "prisma migrate deploy",
+    "seed:vercel": "ts-node --transpile-only scripts/seedDatabase.ts"
   },
   "dependencies": {
     "@clerk/elements": "^0.14.6",
