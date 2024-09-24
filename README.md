@@ -2,6 +2,10 @@
 
 Smart Rate is an innovative AI-powered platform designed to help Stetson University students find the best professors for their academic needs. Leveraging advanced technologies like Retrieval-Augmented Generation (RAG) and natural language processing, Smart Rate provides personalized professor recommendations based on student queries.
 
+## 🌐 Live Demo
+
+Experience Smart Rate in action: [https://rmp-ai.vercel.app/](https://rmp-ai.vercel.app/)
+
 ## 🌟 Features
 
 - **AI-Powered Recommendations**: Get tailored professor suggestions using state-of-the-art language models.
