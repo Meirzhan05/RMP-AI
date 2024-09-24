@@ -7,7 +7,7 @@ async function seedDatabase() {
     const prisma = new PrismaClient({
         datasources: {
           db: {
-              url: process.env.POSTGRES_PRISMA_URL,
+              url: process.env.POSTGRES_URL,
           }
         },
     });
