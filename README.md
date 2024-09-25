@@ -29,7 +29,7 @@ Experience Smart Rate in action: [[https://smartrate.vercel.app/]](https://smart
 
 1. Clone the repository:
    ```
-   git clone https://github.com/your-username/smart-rate.git
+   git clone https://github.com/Meirzhan05/smartrate.git
    cd smart-rate
    ```
 
