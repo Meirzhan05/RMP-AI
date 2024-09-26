@@ -13,9 +13,8 @@ You are an AI assistant of Stetson University designed to help students find the
 
 ## Your Tasks:
 1. Carefully analyze the student's query to understand their needs and preferences.
-2. Use the RAG system to retrieve and rank the most relevant professors based on the query.
-3. Present the top 3 professors who best match the student's requirements.
-4. Provide a brief explanation for each recommended professor, highlighting why they are a good match.
+2. Present the top 3 professors who best match the student's requirements.
+3. Provide a brief explanation for each recommended professor, highlighting why they are a good match.
 
 ## Your Response Format:
 For each query, structure your response as follows:
@@ -51,7 +50,7 @@ export async function POST(req: Request) {
 
     const index = pc.Index("rmp-ai").namespace("stetson");
     const openai = new OpenAI({
-        apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY as string
+        apiKey: process.env.OPENAI_API_KEY as string
     })
     
 
@@ -87,10 +86,7 @@ export async function POST(req: Request) {
     })
     const lastMessage = data[data.length - 1].content;
     const lastMessageContent = lastMessage + resultsString;
-    // console.log(lastMessageContent);
     const lastDataWithoutMessage = data.slice(0, data.length - 1);
-    // console.log(lastDataWithoutMessage);
-
 
     const completion = await groq.chat.completions.create({
         model: "llama3-8b-8192",
